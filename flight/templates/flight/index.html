@@ -1,0 +1,101 @@
+<style>
+    .inputdata{
+        padding-bottom: 20px;
+    }
+    .listdata{
+        padding: 10px 10px 10px 10px;
+    }
+    table{
+        width: 400;
+    }
+    th{
+        text-align: left;
+    }
+    td{
+        text-align: left;
+    }
+    .datafilter{
+        padding-top: 20px;
+    }
+
+</style>
+<html>
+	<body>
+        <h1> Airline List </h1>
+        <div class="inputdata">
+            <form action="{% url 'flight:add' %}" method="post">
+                {% csrf_token %}
+                <label>Airline Name</label>
+                <input type="text" name="maskapai"/>
+                <br/><br/>
+                <label>flight Schedule</label>
+                <input type="text" name="time"/>
+                    
+                <br/><br/>   
+                <button type="submit">Submit</button>
+            </form>   
+    
+        </div>
+        <div="listdata">
+            {% if flight_schedules %}
+            <table class="datalist">
+                <tr>
+                    <th> No </th>
+                    <th> Airline Name </th>
+                    <th> Flight Schedule </th>
+                    <th> Action </th>
+                </tr>
+                {% for flight_schedule in flight_schedules %}
+                    
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{flight_schedule.name}}</td>
+                        <td>{{flight_schedule.time}}</td>
+                        <td>
+                            <a href="{%url 'flight:delete' forloop.counter%}">delete</a>
+                            <a href="{%url 'flight:up' forloop.counter%}">up</a>
+                            <a href="{%url 'flight:down' forloop.counter%}">down</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p>no Airline are available.</p>
+            {% endif %}
+        </div>
+        <form action="{% url 'flight:filter' %}" method="POST">
+            {% csrf_token %}
+            <table class="datafilter">
+                <tr>
+                    <td>
+                        <select name="airline_filter">
+                            <option value="all">----choose airline----</option>
+                            {% for airline in airlines %}
+                                {% if airline_selected == airline %} 
+                                    <option value="{{airline}}" selected>{{airline}}</option>
+                                {% else %}
+                                    <option value="{{airline}}">{{airline}}</option>
+                                {% endif %}
+                            {% endfor %}   
+                        </select>
+                    </td>
+                    <td>
+                        <select name="schedule_filter">
+                            <option value="all">-----choose time-----</option>
+                            {% for schedule in schedules %}
+                                {% if schedule_selected == schedule %} 
+                                    <option value="{{schedule}}" selected>{{schedule}}</option>
+                                {% else %}
+                                <option value="{{schedule}}">{{schedule}}</option>
+                                {% endif %}
+                            {% endfor %} 
+                        </select>
+                    </td>
+                    <td>
+                        <button type="Submit">ok</button>
+                    </td>
+                </tr>   
+            </table>
+        </form>
+	</body>
+</html>

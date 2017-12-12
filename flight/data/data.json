@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Air Asia", 
+    "time": "09:00"
+  }, 
+  {
+    "name": "Garuda", 
+    "time": "11:00"
+  }, 
+  {
+    "name": "Garuda", 
+    "time": "09:00"
+  }, 
+  {
+    "name": "Air Asia", 
+    "time": "18:05"
+  }, 
+  {
+    "time": "09:00", 
+    "name": "Air Asia", 
+    "schedule": "malam"
+  }, 
+  {
+    "schedule": "malam", 
+    "name": "Garuda", 
+    "time": "13:00"
+  }
+]
