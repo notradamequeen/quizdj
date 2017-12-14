@@ -10,22 +10,23 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
 file = os.path.join(settings.BASE_DIR, 'quizdj/flight/data/data.json')
+data = []
 airline_name = []
 flight_time = ["pagi", "siang", "malam"]
 
 def index(request, filtered=None, airline_selected=None, schedule_selected=None):
-    if filtered is None:
-        with open(file, mode='r') as f:
-            data = json.load(f)
-    else:
-        data = filtered
+    if filtered is not None:
+        flight_schedules = filtered
 
-    for airline in data:
+    else:
+        flight_schedules = data
+
+    for airline in flight_schedules:
         if airline['name'] not in airline_name:
             airline_name.append(airline['name'])
 
     context = {
-        'flight_schedules': data,
+        'flight_schedules': flight_schedules,
         'airlines': airline_name,
         'schedules': flight_time,
         'airline_selected': airline_selected,
@@ -38,41 +39,26 @@ def add(request):
     name = request.POST['maskapai']
     time = request.POST['time']
 
-    with open(file, mode='r') as f:
-        data = json.load(f)
-
     data.append({"name": name, "time":time})
-    with open(file, mode='w') as feeds:
-        feeds.write(json.dumps(data, indent=2))
     
     return HttpResponseRedirect(reverse('flight:index'))
 
 def delete(request, index):
-    with open(file, mode='r') as f:
-        data = json.load(f)
-
+    item = data[int(index)-1]
     del data[int(index)-1]
-    with open(file, mode='w') as feeds:
-        feeds.write(json.dumps(data, indent=2))
+
+    if item['name'] not in [airline['name'] for airline in data]:
+        airline_name.remove(item['name'])
     
     return HttpResponseRedirect(reverse('flight:index'))
 
 def up(request, index):
-    with open(file, mode='r') as f:
-        data = json.load(f)
-
     if int(index) > 1:
         data.insert(int(index)-2, data.pop(int(index)-1))
-
-    with open(file, mode='w') as feeds:
-        feeds.write(json.dumps(data, indent=2))
     
     return HttpResponseRedirect(reverse('flight:index'))
 
 def down(request, index):
-    with open(file, mode='r') as f:
-        data = json.load(f)
-
     if int(index)-1 < len(data)-1:
         data.insert(int(index), data.pop(int(index)-1))
     with open(file, mode='w') as feeds:
@@ -90,9 +76,6 @@ def filter(request):
     pagi = datetime.strptime("00:00", "%H:%M")
     siang = datetime.strptime("12:00", "%H:%M")
     malam = datetime.strptime("18:00", "%H:%M")
-
-    with open(file, mode='r') as f:
-        data = json.load(f)
 
     for item in data:
         flight_time = datetime.strptime(item['time'], "%H:%M")
@@ -115,7 +98,6 @@ def filter(request):
                 filtered_data2.append(filtered_item)
     else:
         filtered_data2 = filtered_data
-    print filtered_data2
     
     return index(request, filtered_data2, airline, schedule)
 
